@@ -1,113 +1,45 @@
 import { useForm } from "react-hook-form";
+import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+
+const toDoState = atom<IToDo[]>({ key: "toDo", default: [] });
 
 interface IForm {
-  email: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  password: string;
-  passwordConfirmation: string;
+  toDo: string;
+}
+
+interface IToDo {
+  text: string;
+  id: number;
+  category: "TO_DO" | "IN PROGRESS" | "DONE";
 }
 
 function ToDoList() {
-  const {
-    register,
-    watch,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IForm>({
-    defaultValues: {
-      email: "@naver.com",
-    },
-  });
-  const onValid = (data: any) => {
-    console.log(data);
+  const [toDos, setToDos] = useRecoilState(toDoState);
+  const { register, handleSubmit, setValue } = useForm<IForm>();
+  const handleValid = ({ toDo }: IForm) => {
+    setToDos((oldToDos) => [{ text: toDo, category: "TO_DO", id: Date.now() }, ...oldToDos]);
+    setValue("toDo", "");
   };
-  console.log(errors);
+  console.log(toDos);
+
   return (
     <div>
-      <form style={{ display: "flex", flexDirection: "column" }} onSubmit={handleSubmit(onValid)}>
+      <h1>To Do List</h1>
+      <form onSubmit={handleSubmit(handleValid)}>
         <input
-          {...register("email", {
-            required: "Email is required.",
-            pattern: {
-              value: /^[A-Za-z0-9._%+-]+@naver.com$/,
-              message: "You should enter a valid naver email address.",
-            },
-          })}
-          placeholder="Email"
+          {...register("toDo", { required: "Please enter a to do item." })}
+          placeholder="enter to do item"
         />
-        <span>{errors?.email?.message}</span>
-        <input
-          {...register("firstName", { required: "First name is required." })}
-          placeholder="First Name"
-        />
-        <span>{errors?.firstName?.message}</span>
-        <input
-          {...register("lastName", { required: "Last name is required." })}
-          placeholder="Last Name"
-        />
-        <span>{errors?.lastName?.message}</span>
-        <input
-          {...register("username", {
-            required: "Username is required.",
-            minLength: {
-              value: 5,
-              message: "Username should be longer than 5 letters.",
-            },
-          })}
-          placeholder="Username"
-        />
-        <span>{errors?.username?.message}</span>
-        <input
-          {...register("password", {
-            required: "Password is required.",
-            minLength: {
-              value: 5,
-              message: "Password should be longer than 5 letters.",
-            },
-          })}
-          placeholder="Password"
-        />
-        <span>{errors?.password?.message}</span>
-        <input
-          {...register("passwordConfirmation", {
-            required: "Password confirmation is required.",
-            minLength: {
-              value: 5,
-              message: "Password confirmation should be longer than 5 letters.",
-            },
-          })}
-          placeholder="Password Confirmation"
-        />
-        <span>{errors?.passwordConfirmation?.message}</span>
         <button>Add</button>
       </form>
+      <hr />
+      <ul>
+        {toDos.map((toDo) => (
+          <li key={toDo.id}>{toDo.text}</li>
+        ))}
+      </ul>
     </div>
   );
 }
-
-// function ToDoList() {
-//   const [toDo, setToDo] = useState("");
-//   const onChange = (event: React.FormEvent<HTMLInputElement>) => {
-//     const {
-//       currentTarget: { value },
-//     } = event;
-//     setToDo(value);
-//   };
-//   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-//     event.preventDefault();
-//     console.log(toDo);
-//   };
-
-//   return (
-//     <div>
-//       <form onSubmit={onSubmit}>
-//         <input onChange={onChange} value={toDo} placeholder="enter a to do item" />
-//         <button>Add</button>
-//       </form>
-//     </div>
-//   );
-// }
 
 export default ToDoList;
