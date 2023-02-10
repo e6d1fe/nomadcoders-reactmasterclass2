@@ -16,18 +16,39 @@ const StatusButton = styled.button`
 
 function ToDo({ text, category, id }: IToDo) {
   const setToDos = useSetRecoilState(toDoState);
-  const onClick = (newCategory: IToDo["category"]) => {
-    console.log("I want to go to ", newCategory);
+  const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const {
+      currentTarget: { name },
+    } = event;
+    // console.log("I want to add this item to ", name);
+    setToDos((oldToDos) => {
+      const targetIndex = oldToDos.findIndex((toDo) => toDo.id === id);
+      console.log(targetIndex);
+      const oldToDo = oldToDos[targetIndex];
+      const newToDo = { text, id, category: name };
+      console.log(oldToDo, newToDo);
+      return oldToDos;
+    });
   };
 
   return (
     <ToDoItems>
       <span>{text}</span>
-      {category !== "TO_DO" && <StatusButton onClick={() => onClick("TO_DO")}>TO DO</StatusButton>}
-      {category !== "IN_PROGRESS" && (
-        <StatusButton onClick={() => onClick("IN_PROGRESS")}>IN PRORESS</StatusButton>
+      {category !== "TO_DO" && (
+        <StatusButton name="TO_DO" onClick={onClick}>
+          TO DO
+        </StatusButton>
       )}
-      {category !== "DONE" && <StatusButton onClick={() => onClick("DONE")}>DONE</StatusButton>}
+      {category !== "IN_PROGRESS" && (
+        <StatusButton name="IN_PROGRESS" onClick={onClick}>
+          IN PROGRESS
+        </StatusButton>
+      )}
+      {category !== "DONE" && (
+        <StatusButton name="DONE" onClick={onClick}>
+          DONE
+        </StatusButton>
+      )}
     </ToDoItems>
   );
 }

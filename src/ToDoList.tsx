@@ -11,6 +11,7 @@ const Title = styled.div`
 
 function ToDoList() {
   const toDos = useRecoilValue(toDoState);
+  console.log(toDos);
 
   return (
     <div>
