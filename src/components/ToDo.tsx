@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useSetRecoilState } from "recoil";
 
 const ToDoItems = styled.li`
-  margin-left: 10px;
+  margin-left: 15px;
   margin-bottom: 5px;
   font-size: 15px;
 `;
