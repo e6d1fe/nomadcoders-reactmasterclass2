@@ -1,4 +1,4 @@
-import { IToDo, toDoState } from "./atoms";
+import { Categories, IToDo, toDoState } from "./atoms";
 import styled from "styled-components";
 import { useSetRecoilState } from "recoil";
 
@@ -20,35 +20,43 @@ function ToDo({ text, category, id }: IToDo) {
     const {
       currentTarget: { name },
     } = event;
-    // console.log("I want to add this item to ", name);
     setToDos((oldToDos) => {
       const targetIndex = oldToDos.findIndex((toDo) => toDo.id === id);
-      console.log(targetIndex);
-      const oldToDo = oldToDos[targetIndex];
       const newToDo = { text, id, category: name as any };
-      console.log(oldToDo, newToDo);
       return [...oldToDos.slice(0, targetIndex), newToDo, ...oldToDos.slice(targetIndex + 1)];
+    });
+  };
+
+  const deleteButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const {
+      currentTarget: { name },
+    } = event;
+    setToDos((oldToDos) => {
+      const targetIndex = oldToDos.findIndex((toDo) => toDo.id === id);
+      const newToDo = { text, id, category: name as any };
+      return [...oldToDos.slice(0, targetIndex), ...oldToDos.slice(targetIndex + 1)];
     });
   };
 
   return (
     <ToDoItems>
       <span>{text}</span>
-      {category !== "TO_DO" && (
-        <StatusButton name="TO_DO" onClick={onClick}>
+      {category !== Categories.TO_DO && (
+        <StatusButton name={Categories.TO_DO} onClick={onClick}>
           TO DO
         </StatusButton>
       )}
-      {category !== "IN_PROGRESS" && (
-        <StatusButton name="IN_PROGRESS" onClick={onClick}>
+      {category !== Categories.IN_PROGRESS && (
+        <StatusButton name={Categories.IN_PROGRESS} onClick={onClick}>
           IN PROGRESS
         </StatusButton>
       )}
-      {category !== "DONE" && (
-        <StatusButton name="DONE" onClick={onClick}>
+      {category !== Categories.DONE && (
+        <StatusButton name={Categories.DONE} onClick={onClick}>
           DONE
         </StatusButton>
       )}
+      <StatusButton onClick={deleteButton}>🗑️</StatusButton>
     </ToDoItems>
   );
 }

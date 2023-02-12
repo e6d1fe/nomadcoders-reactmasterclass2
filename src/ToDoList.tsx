@@ -1,6 +1,6 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import CreateToDo from "./components/CreatetoDo";
-import { toDoSelector, toDoState } from "./components/atoms";
+import { categoryState, toDoSelector, toDoState } from "./components/atoms";
 import ToDo from "./components/ToDo";
 import styled from "styled-components";
 
@@ -9,39 +9,32 @@ const Title = styled.div`
   padding: 10px;
 `;
 
-const SubTitle = styled.div`
-  margin: 10px 0px 15px 10px;
-  font-weight: 600;
-  border-bottom: 1px solid gray;
+const SelectBox = styled.select`
+  margin: 10px;
 `;
 
 function ToDoList() {
-  const [toDo, inProgress, done] = useRecoilValue(toDoSelector);
-  console.log(toDo, inProgress, done);
+  const toDos = useRecoilValue(toDoSelector);
+  const [category, setCategory] = useRecoilState(categoryState);
+  const onInput = (event: React.FormEvent<HTMLSelectElement>) => {
+    setCategory(event.currentTarget.value as any);
+  };
+
+  console.log(toDos);
 
   return (
     <div>
       <Title>📝 To Do List</Title>
       <hr />
+      <SelectBox value={category} onInput={onInput}>
+        <option value="TO_DO">TO DO</option>
+        <option value="IN_PROGRESS">IN PROGRESS</option>
+        <option value="DONE">DONE</option>
+      </SelectBox>
       <CreateToDo />
-      <SubTitle>To Do</SubTitle>
-      <ul>
-        {toDo.map((toDo) => (
-          <ToDo key={toDo.id} {...toDo} />
-        ))}
-      </ul>
-      <SubTitle>In Progress</SubTitle>
-      <ul>
-        {inProgress.map((toDo) => (
-          <ToDo key={toDo.id} {...toDo} />
-        ))}
-      </ul>
-      <SubTitle>Done</SubTitle>
-      <ul>
-        {done.map((toDo) => (
-          <ToDo key={toDo.id} {...toDo} />
-        ))}
-      </ul>
+      {toDos?.map((toDo) => (
+        <ToDo key={toDo.id} {...toDo} />
+      ))}
     </div>
   );
 }
